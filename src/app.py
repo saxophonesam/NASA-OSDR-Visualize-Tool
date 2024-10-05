@@ -11,7 +11,7 @@ from layout_helper import run_standalone_app
 from analyze_data import get_experiment_files_app, DATA_FOLDER_PATH, DESKTOP_FOLDER_PATH
 
 # 定義動態生成樣式的函數
-def generate_custom_box_style(width, height):
+def generate_custom_box_style(width, aspect_ratio):
     return {
         'background-color': '#f5f5f5',
         'border': '1px solid #ccc',
@@ -20,11 +20,28 @@ def generate_custom_box_style(width, height):
         'padding': '0',
         'margin': '10px',
         'width': f'{width}%',  # 動態設定寬度
-        'height': f'{height}px',  # 動態設定高度
+        # 使用 aspect-ratio 根據寬度調整高度
+        'height': 'auto',  # 高度自動
+        'aspect-ratio': aspect_ratio,  # 使用寬高比，讓高度隨寬度變化
         'overflow': 'hidden',
         'display': 'inline-block',
         'vertical-align': 'top'
     }
+
+# def generate_custom_box_style(width, height):
+#     return {
+#         'background-color': '#f5f5f5',
+#         'border': '1px solid #ccc',
+#         'border-radius': '10px',
+#         'box-shadow': '0 4px 8px rgba(0, 0, 0, 0.1)',
+#         'padding': '0',
+#         'margin': '10px',
+#         'width': f'{width}%',  # 動態設定寬度
+#         'height': f'{height}px',  # 動態設定高度
+#         'overflow': 'hidden',
+#         'display': 'inline-block',
+#         'vertical-align': 'top'
+#     }
 
 
 def header_colors():
@@ -92,7 +109,7 @@ def layout():
                                     ], className="link-repository-description")
                                 ])
                             ], className="custom-box-content")
-                        ], style=generate_custom_box_style(100, 472)),
+                        ], style=generate_custom_box_style(100, '1.33')),
 
                         # Experiments Compare區塊
                         html.Div([
@@ -124,19 +141,49 @@ def layout():
                                     )
                                 ], style={'text-align': 'center', 'margin-top': '10px', 'margin-bottom': '15px'}),
                             ], className="custom-box-content")
-                        ], style=generate_custom_box_style(100, 570))
+                        ], style=generate_custom_box_style(100, '1.33'))
 
                     ], className="content-left-side"), #佔網頁寬度比例1/3 + 分隔線
 
                     # Content右半邊(由上到下排列的三個區塊)
                     html.Div([
+                        # # Experiments Background區塊
+                        # html.Div([
+                        #     html.Div([
+                        #         html.Div("Experiments Background", className="custom-box-header"),
+                        #         dcc.Loading(id="loading-background", children=[
+                        #             html.Div("Background information will be shown here.", id="exp-background", className="custom-box-content"),
+                        #         ]),
+                        #     ], style=generate_custom_box_style(100, 100)),
+                        # ], className="content-right-side-height"), #佔網頁高度比例1/3
+
+                        # # Experiments Process區塊
+                        # html.Div([
+                        #     html.Div([
+                        #         html.Div("Experiments Process", className="custom-box-header"),
+                        #         dcc.Loading(id="loading-process", children=[
+                        #             html.Div("Process data will be shown here.", id="exp-process", className="custom-box-content"),
+                        #         ]),
+                        #     ], style=generate_custom_box_style(100, 100)),
+                        # ], className="content-right-side-height"), #佔網頁高度比例1/3
+
+                        # # Experiments Data Results區塊
+                        # html.Div([
+                        #     html.Div([
+                        #         html.Div("Experiments Data Results", className="custom-box-header"),
+                        #         dcc.Loading(id="loading-results", children=[
+                        #             html.Div("Data Results will be shown here.", id="exp-results", className="custom-box-content"),
+                        #         ]),
+                        #     ], style=generate_custom_box_style(100, 100)),
+                        # ], className="content-right-side-height"), #佔網頁高度比例1/3
+                        
                         # Experiments Background區塊
                         html.Div([
                             html.Div("Experiments Background", className="custom-box-header"),
                             dcc.Loading(id="loading-background", children=[
                                 html.Div("Background information will be shown here.", id="exp-background", className="custom-box-content"),
                             ]),
-                        ], style=generate_custom_box_style(100, 340)),
+                        ], style=generate_custom_box_style(100, '2.11')),
 
                         # Experiments Process區塊
                         html.Div([
@@ -144,7 +191,7 @@ def layout():
                             dcc.Loading(id="loading-process", children=[
                                 html.Div("Process data will be shown here.", id="exp-process", className="custom-box-content"),
                             ]),
-                        ], style=generate_custom_box_style(100, 340)),
+                        ], style=generate_custom_box_style(100, '2.11')),
 
                         # Experiments Data Results區塊
                         html.Div([
@@ -152,7 +199,7 @@ def layout():
                             dcc.Loading(id="loading-results", children=[
                                 html.Div("Data Results will be shown here.", id="exp-results", className="custom-box-content"),
                             ]),
-                        ], style=generate_custom_box_style(100, 340)),
+                        ], style=generate_custom_box_style(100, '2.11')),
 
                     ], className="content-right-side") #佔網頁寬度比例2/3
                 ], style={'display': 'flex', 'justify-content': 'space-between'}),
@@ -242,11 +289,19 @@ def callbacks(_app):
         # 如果按的是 OSD-379 按鈕
         if button_id == "osd-379":
             if quick_view_enabled:
-                time.sleep(3)  # 模擬 3 秒的處理
+                time.sleep(2)  # 模擬 3 秒的處理
+
+                # 這裡加入圖片的URL，並使用html.Img顯示
+                osd_379_ex_process_image_url = "https://github.com/saxophonesam/NASA-OSDR-Visualize-Tool/blob/main/image/OSD-379/Experiments%20Process.png?raw=true"
+                OSD_379_process=html.Img(src=osd_379_ex_process_image_url, style={'width': '100%',
+                                                                                  'height': '400px',
+                                                                                #   'object-fit': 'contain',  # 保证图片在容器中按比例缩放
+                                                                                  }),  # Background區塊顯示圖片
+
                 return (
                     "Visualization of OSD-379 is completed!",  # Status
-                    "OSD-379 background is updated!",  # Background區塊
-                    "OSD-379 process is updated!",  # Process區塊
+                    "OSD-379 background is updated!", # Background區塊
+                    OSD_379_process,# Process區塊
                     "OSD-379 results are updated!"  # Results區塊
                 )
             else:

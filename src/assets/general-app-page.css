@@ -6,6 +6,10 @@
 .dash-default-spinner {
     opacity: 0.3 !important;
 }
+#main_page{
+    width: 100%;
+    height: auto;
+}
 
 /* Header網頁頭部設定 */
 #app-page-header {
@@ -30,7 +34,7 @@
 /* Content area滾動區域設置 */
 #app-content {
     padding: 20px;
-    overflow-y: hidden;
+    overflow-y: auto;
     height: auto;
     min-height: calc(100vh - 60px); /* 設定內容區最小高度 */
     box-sizing: border-box;
@@ -47,6 +51,13 @@
 /* Content右半邊樣式 */
 .content-right-side {
     width: 70%; /* 佔網頁寬度比例2/3 */
+    display: block;
+}
+
+
+/* Content background樣式 */
+.content-right-height {
+    height: 33%; /* 佔網頁高度比例1/3 */
     display: block;
 }
 

@@ -20,7 +20,6 @@ def generate_custom_box_style(width, aspect_ratio):
         'padding': '0',
         'margin': '10px',
         'width': f'{width}%',  # 動態設定寬度
-        # 使用 aspect-ratio 根據寬度調整高度
         'height': 'auto',  # 高度自動
         'aspect-ratio': aspect_ratio,  # 使用寬高比，讓高度隨寬度變化
         'overflow': 'hidden',
@@ -28,21 +27,20 @@ def generate_custom_box_style(width, aspect_ratio):
         'vertical-align': 'top'
     }
 
-# def generate_custom_box_style(width, height):
-#     return {
-#         'background-color': '#f5f5f5',
-#         'border': '1px solid #ccc',
-#         'border-radius': '10px',
-#         'box-shadow': '0 4px 8px rgba(0, 0, 0, 0.1)',
-#         'padding': '0',
-#         'margin': '10px',
-#         'width': f'{width}%',  # 動態設定寬度
-#         'height': f'{height}px',  # 動態設定高度
-#         'overflow': 'hidden',
-#         'display': 'inline-block',
-#         'vertical-align': 'top'
-#     }
-
+def generate_custom_box_style_left(width, height):
+    return {
+        'background-color': '#f5f5f5',
+        'border': '1px solid #ccc',
+        'border-radius': '10px',
+        'box-shadow': '0 4px 8px rgba(0, 0, 0, 0.1)',
+        'padding': '0',
+        'margin': '10px',
+        'width': f'{width}%',  # 動態設定寬度
+        'height': f'{height}px',  # 動態高度自動
+        'overflow': 'hidden',
+        'display': 'inline-block',
+        'vertical-align': 'top'
+    }
 
 def header_colors():
     return {
@@ -109,7 +107,7 @@ def layout():
                                     ], className="link-repository-description")
                                 ])
                             ], className="custom-box-content")
-                        ], style=generate_custom_box_style(100, '1.33')),
+                        ], style=generate_custom_box_style_left(100, 500)),
 
                         # Experiments Compare區塊
                         html.Div([
@@ -141,65 +139,60 @@ def layout():
                                     )
                                 ], style={'text-align': 'center', 'margin-top': '10px', 'margin-bottom': '15px'}),
                             ], className="custom-box-content")
-                        ], style=generate_custom_box_style(100, '1.33'))
+                        ], style=generate_custom_box_style_left(100, 1300))
 
                     ], className="content-left-side"), #佔網頁寬度比例1/3 + 分隔線
 
                     # Content右半邊(由上到下排列的三個區塊)
                     html.Div([
+                        html.Div([
+                            html.Div("Experiment Visualization", className="custom-box-header"),
+                            dcc.Tabs(id="tabs-background", value='tab-1', children=[
+                                # Experiment Background區塊
+                                dcc.Tab(label='Experiments Background', value='tab-1', children=[
+                                    dcc.Loading(id="loading-background", children=[
+                                        html.Div("Background information will be shown here.", id="exp-background", className="custom-box-content"),
+                                    ]),
+                                ]),
+
+                                # Experiment Process區塊
+                                dcc.Tab(label='Experiment Process', value='tab-2', children=[
+                                    dcc.Loading(id="loading-process", children=[
+                                        html.Div("Process data will be shown here.", id="exp-process", className="custom-box-content"),
+                                    ]),
+                                ]),
+
+                                # Experiment Results區塊
+                                dcc.Tab(label='Experiment Results', value='tab-3', children=[
+                                    dcc.Loading(id="loading-results", children=[
+                                        html.Div("Data Results will be shown here.", id="exp-results", className="custom-box-content"),
+                                    ]),
+                                ]),
+                            ]),
+                         ], style=generate_custom_box_style(100, '2')),
                         # # Experiments Background區塊
                         # html.Div([
-                        #     html.Div([
-                        #         html.Div("Experiments Background", className="custom-box-header"),
-                        #         dcc.Loading(id="loading-background", children=[
-                        #             html.Div("Background information will be shown here.", id="exp-background", className="custom-box-content"),
-                        #         ]),
-                        #     ], style=generate_custom_box_style(100, 100)),
-                        # ], className="content-right-side-height"), #佔網頁高度比例1/3
+                        #     html.Div("Experiment Background", className="custom-box-header"),
+                        #     dcc.Loading(id="loading-background", children=[
+                        #         html.Div("Background information will be shown here.", id="exp-background", className="custom-box-content"),
+                        #     ]),
+                        # ], style=generate_custom_box_style(100, '1.88')),
 
                         # # Experiments Process區塊
                         # html.Div([
-                        #     html.Div([
-                        #         html.Div("Experiments Process", className="custom-box-header"),
-                        #         dcc.Loading(id="loading-process", children=[
-                        #             html.Div("Process data will be shown here.", id="exp-process", className="custom-box-content"),
-                        #         ]),
-                        #     ], style=generate_custom_box_style(100, 100)),
-                        # ], className="content-right-side-height"), #佔網頁高度比例1/3
+                        #     html.Div("Experiment Process", className="custom-box-header"),
+                        #     dcc.Loading(id="loading-process", children=[
+                        #         html.Div("Process data will be shown here.", id="exp-process", className="custom-box-content"),
+                        #     ]),
+                        # ], style=generate_custom_box_style(100, '1.88')),
 
                         # # Experiments Data Results區塊
                         # html.Div([
-                        #     html.Div([
-                        #         html.Div("Experiments Data Results", className="custom-box-header"),
-                        #         dcc.Loading(id="loading-results", children=[
-                        #             html.Div("Data Results will be shown here.", id="exp-results", className="custom-box-content"),
-                        #         ]),
-                        #     ], style=generate_custom_box_style(100, 100)),
-                        # ], className="content-right-side-height"), #佔網頁高度比例1/3
-                        
-                        # Experiments Background區塊
-                        html.Div([
-                            html.Div("Experiments Background", className="custom-box-header"),
-                            dcc.Loading(id="loading-background", children=[
-                                html.Div("Background information will be shown here.", id="exp-background", className="custom-box-content"),
-                            ]),
-                        ], style=generate_custom_box_style(100, '2.11')),
-
-                        # Experiments Process區塊
-                        html.Div([
-                            html.Div("Experiments Process", className="custom-box-header"),
-                            dcc.Loading(id="loading-process", children=[
-                                html.Div("Process data will be shown here.", id="exp-process", className="custom-box-content"),
-                            ]),
-                        ], style=generate_custom_box_style(100, '2.11')),
-
-                        # Experiments Data Results區塊
-                        html.Div([
-                            html.Div("Experiments Data Results", className="custom-box-header"),
-                            dcc.Loading(id="loading-results", children=[
-                                html.Div("Data Results will be shown here.", id="exp-results", className="custom-box-content"),
-                            ]),
-                        ], style=generate_custom_box_style(100, '2.11')),
+                        #     html.Div("Experiment Results", className="custom-box-header"),
+                        #     dcc.Loading(id="loading-results", children=[
+                        #         html.Div("Data Results will be shown here.", id="exp-results", className="custom-box-content"),
+                        #     ]),
+                        # ], style=generate_custom_box_style(100, '1.88')),
 
                     ], className="content-right-side") #佔網頁寬度比例2/3
                 ], style={'display': 'flex', 'justify-content': 'space-between'}),
@@ -289,20 +282,23 @@ def callbacks(_app):
         # 如果按的是 OSD-379 按鈕
         if button_id == "osd-379":
             if quick_view_enabled:
-                time.sleep(2)  # 模擬 3 秒的處理
+                time.sleep(2)
 
-                # 這裡加入圖片的URL，並使用html.Img顯示
-                osd_379_ex_process_image_url = "https://github.com/saxophonesam/NASA-OSDR-Visualize-Tool/blob/main/image/OSD-379/Experiments%20Process.png?raw=true"
-                OSD_379_process=html.Img(src=osd_379_ex_process_image_url, style={'width': '100%',
-                                                                                  'height': '400px',
-                                                                                #   'object-fit': 'contain',  # 保证图片在容器中按比例缩放
-                                                                                  }),  # Background區塊顯示圖片
+                # 這裡加入OSD-379圖片的URL，並使用html.Img顯示
+                osd_379_background_image_url = "https://github.com/saxophonesam/NASA-OSDR-Visualize-Tool/blob/main/image/OSD-379/Experiment-Background.png?raw=true"
+                OSD_379_background=html.Img(src=osd_379_background_image_url, style={'width': '100%','height': '100',}), # Background區塊顯示圖片
+
+                osd_379_process_image_url = "https://github.com/saxophonesam/NASA-OSDR-Visualize-Tool/blob/main/image/OSD-379/Experiment-Process.png?raw=true"
+                OSD_379_process=html.Img(src=osd_379_process_image_url, style={'width': '100%','height': '100',}), # Process區塊顯示圖片
+
+                osd_379_results_image_url = "https://github.com/saxophonesam/NASA-OSDR-Visualize-Tool/blob/main/image/OSD-379/Experiment-Results.png?raw=true"
+                OSD_379_results=html.Img(src=osd_379_results_image_url, style={'width': '100%','height': '100',}), # Results區塊顯示圖片
 
                 return (
                     "Visualization of OSD-379 is completed!",  # Status
-                    "OSD-379 background is updated!", # Background區塊
-                    OSD_379_process,# Process區塊
-                    "OSD-379 results are updated!"  # Results區塊
+                    OSD_379_background, # Background區塊
+                    OSD_379_process, # Process區塊
+                    OSD_379_results # Results區塊
                 )
             else:
                 return (
@@ -315,12 +311,23 @@ def callbacks(_app):
         # 如果按的是 OSD-665 按鈕
         if button_id == "osd-665":
             if quick_view_enabled:
-                time.sleep(3)  # 模擬 3 秒的處理
+                time.sleep(2)
+
+                # 這裡加入OSD-379圖片的URL，並使用html.Img顯示
+                osd_665_background_image_url = "https://github.com/saxophonesam/NASA-OSDR-Visualize-Tool/blob/main/image/OSD-665/Experiment-Background.png?raw=true"
+                OSD_665_background=html.Img(src=osd_665_background_image_url, style={'width': '100%','height': '100',}), # Background區塊顯示圖片
+
+                osd_665_process_image_url = "https://github.com/saxophonesam/NASA-OSDR-Visualize-Tool/blob/main/image/OSD-665/Experiment-Process.png?raw=true"
+                OSD_665_process=html.Img(src=osd_665_process_image_url, style={'width': '100%','height': '100',}), # Process區塊顯示圖片
+
+                osd_665_results_image_url = "https://github.com/saxophonesam/NASA-OSDR-Visualize-Tool/blob/main/image/OSD-665/Experiment-Results.png?raw=true"
+                OSD_665_results=html.Img(src=osd_665_results_image_url, style={'width': '100%','height': '100',}), # Results區塊顯示圖片
+
                 return (
                     "Visualization of OSD-665 is completed!",  # Status
-                    "OSD-665 background is updated!",  # Background區塊
-                    "OSD-665 process is updated!",  # Process區塊
-                    "OSD-665 results are updated!"  # Results區塊
+                    OSD_665_background, # Background區塊
+                    OSD_665_process, # Process區塊
+                    OSD_665_results # Results區塊
                 )
             else:
                 return (
@@ -354,19 +361,23 @@ def callbacks(_app):
         if button_id == 'list-all-button':
             # 根據 Quick View 狀態，決定訪問的資料夾
             if quick_view_value:
-                experiment_files = get_experiment_files_app(DATA_FOLDER_PATH)
+                # experiment_files = get_experiment_files_app(DATA_FOLDER_PATH)
+                experiment_files = []
             else:
-                experiment_files = get_experiment_files_app(DESKTOP_FOLDER_PATH)
+                # experiment_files = get_experiment_files_app(DESKTOP_FOLDER_PATH)
+                experiment_files = ['OSD-379','OSD-665']
 
             # 判斷是否有檔案存在
             if not experiment_files:
                 return [], [], "No files! Please go to Link Repository and upload data first"
 
             # 構建下拉選單的 options
-            options = [{'label': f"{file}", 'value': file} for file in experiment_files]
+            # options = [{'label': f"{file}", 'value': file} for file in experiment_files]
+            options = [{'label': file, 'value': file} for file in experiment_files]
 
             # 回傳 options 和 value 以及 status 訊息
-            return options, [file for file in experiment_files], "Operation completed!"
+            # return options, [file for file in experiment_files], "Operation completed!"
+            return options, experiment_files, "Operation completed!"
     
         raise PreventUpdate  # 如果不是 list all 按鈕，則不進行更新
 

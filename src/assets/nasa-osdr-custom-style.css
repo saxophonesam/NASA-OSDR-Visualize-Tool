@@ -1,0 +1,108 @@
+/* 圓角區塊樣式 */
+/* 此區域寫在app.py的generate_custom_box_style()中以動態調整網頁區塊長寬 */
+
+/* 標題區塊樣式 */
+.custom-box-header {
+    background-color: #d3d3d3; /* 標題背景顏色 */
+    padding: 10px; /* 內邊距 */
+    font-weight: bold; /* 字體加粗 */
+    text-align: center; /* 文字居中 */
+}
+
+/* 內容區塊樣式 */
+.custom-box-content {
+    padding: 15px; /* 內容的內邊距 */
+    overflow: hidden; /* 滾動功能 */
+    height: auto; /* 設定固定高度以觸發滾動條 */
+    text-align: center;
+}
+
+/* Quick view 開關樣式 */
+#quick-view-switch {
+    display: flex !important;
+}
+
+/* Link Repository 按鈕樣式 */
+.link-repository-button {
+    background-color: #3c3c3c;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 0 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 浮凸效果 */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* 加入 color 的過渡效果 */
+    display: inline-flex;
+    align-items: center; /* 上下置中 */
+    justify-content: center; /* 左右置中 */
+    cursor: pointer;  /* 確保按鈕具有點擊效果 */
+}
+
+/* Hover 狀態 */
+.link-repository-button:hover {
+    color: white;  /* 確保字體顏色保持白色 */
+    filter: brightness(2);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4); /* 浮凸效果加強 */
+}
+
+/* Active 狀態 (當按下按鈕時) */
+.link-repository-button:active {
+    background-color: #2e2e2e; /* 按下時稍微變暗 */
+    color: white;  /* 按下時保持白色字體 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* 陰影變小，模擬按壓效果 */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Focus 狀態 (當按鈕保持 focus) */
+.link-repository-button:focus {
+    outline: none;
+    background-color: #3c3c3c;  /* 恢復原來的背景顏色 */
+    color: white;  /* 恢復字體顏色 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  /* 恢復正常的浮凸效果 */
+}
+
+/* 使用動畫效果讓按鈕在按下 0.3 秒後恢復 */
+.link-repository-button {
+    animation: buttonReset 0.3s;
+}
+
+/* 定義按鈕恢復動畫 */
+@keyframes buttonReset {
+    0% { background-color: #2e2e2e; color: white;}  /* 按下時的顏色 */
+    100% { background-color: #3c3c3c; color: white;}  /* 恢復原本的顏色 */
+}
+
+/* Link Repository輸入框樣式，調整寬度 */
+.link-repository-input {
+    width: 90%; /* 跟隨父容器寬度 */
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+/* Link Repository全局字體樣式 */
+.link-repository-font {
+    font-weight: bold;
+    color: #333; /* 深色字體 */
+    text-align: center;  /* 確保文字置中 */
+    font-size: 1.7rem; /* 自適應字體大小 */
+}
+
+.link-repository-description {
+    margin-top: auto;  /* 確保描述部分位於最下方 */
+    font-weight: bold;
+    color: #4e4c4c; /* 深色字體 */
+    font-size: 1.7rem; /* 自適應字體大小 */
+    text-align: left; /* 左對齊文字 */
+}
+
+/* Dropdown元素內的樣式調整 */
+#memory-selection .Select-control {
+    align-items: center; /* 垂直置中 */
+    padding: 5px 10px; /* 調整內邊距，上下 5px，左右 10px */
+    height: 40px;            /* 設置選擇框高度，根據需要調整 */
+    box-sizing: border-box;  /* 確保 padding 不會影響元素的總高度 */
+}

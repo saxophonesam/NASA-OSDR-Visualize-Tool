@@ -9,6 +9,7 @@ import time
 from layout_helper import run_standalone_app
 # from load_data_from_nasa_osdr import load_data_from_nasa_osdr_app
 from analyze_data import get_experiment_files_app, DATA_FOLDER_PATH, DESKTOP_FOLDER_PATH
+from analyze_data import get_osd_379_images,get_osd_665_images,get_compare_images
 
 # 定義動態生成樣式的函數
 def generate_custom_box_style(width, aspect_ratio):
@@ -221,17 +222,43 @@ def callbacks(_app):
             elif user_input_url:
                 try:
                     # 如果 quick view 開關是 OFF，且輸入框有輸入值，則將輸入的值賦給 user_input_url
-                    time.sleep(3)  # 模擬 3 秒的處理
                     # web_browser_type = "edge"
                     # load_data_from_nasa_osdr_app(user_input_url, web_browser_type)
 
-                    # 成功後更新頁面狀態
-                    return (
-                        "Data successfully downloaded and processed!",  # Status
-                        "Experiments Background updated.",  # Background區塊
-                        "Experiments Process updated.",  # Process區塊
-                        "Experiments Results updated."  # Results區塊
-                    )
+                    time.sleep(2)
+
+                    if user_input_url == "https://osdr.nasa.gov/bio/repo/data/studies/OSD-379":
+                        # # OSD-379 URL處理邏輯                        
+                        images = get_osd_379_images()
+                        OSD_379_background, OSD_379_process, OSD_379_results = images
+                        
+                        return (
+                            "Data for OSD-379 successfully downloaded and processed!",  # Status
+                            OSD_379_background,  # Background區塊
+                            OSD_379_process,     # Process區塊
+                            OSD_379_results      # Results區塊
+                        )
+
+                    elif user_input_url == "https://osdr.nasa.gov/bio/repo/data/studies/OSD-665":
+                        # OSD-665 URL處理邏輯                   
+                        images = get_osd_665_images()
+                        OSD_665_background, OSD_665_process, OSD_665_results = images
+
+                        return (
+                            "Data for OSD-665 successfully downloaded and processed!",  # Status
+                            OSD_665_background,  # Background區塊
+                            OSD_665_process,     # Process區塊
+                            OSD_665_results      # Results區塊
+                        )
+
+                    else:
+                        return (
+                            f"Invalid URL: {user_input_url}",  # 顯示錯誤訊息在 Status
+                            "No updates.",  # Background區塊
+                            "No updates.",  # Process區塊
+                            "No updates."  # Results區塊
+                        )
+                    
                 except ValueError as e:
                     # 捕捉 ValueError 並將錯誤訊息顯示到頁面
                     return (
@@ -260,15 +287,9 @@ def callbacks(_app):
             if quick_view_enabled:
                 time.sleep(2)
 
-                # 這裡加入OSD-379圖片的URL，並使用html.Img顯示
-                osd_379_background_image_url = "https://github.com/saxophonesam/NASA-OSDR-Visualize-Tool/blob/main/image/OSD-379/Experiment-Background.png?raw=true"
-                OSD_379_background=html.Img(src=osd_379_background_image_url, style={'width': '100%','height': '100',}), # Background區塊顯示圖片
-
-                osd_379_process_image_url = "https://github.com/saxophonesam/NASA-OSDR-Visualize-Tool/blob/main/image/OSD-379/Experiment-Process.png?raw=true"
-                OSD_379_process=html.Img(src=osd_379_process_image_url, style={'width': '100%','height': '100',}), # Process區塊顯示圖片
-
-                osd_379_results_image_url = "https://github.com/saxophonesam/NASA-OSDR-Visualize-Tool/blob/main/image/OSD-379/Experiment-Results.png?raw=true"
-                OSD_379_results=html.Img(src=osd_379_results_image_url, style={'width': '100%','height': '100',}), # Results區塊顯示圖片
+                # 這裡加入OSD-379圖片的URL，並使用html.Img顯示           
+                images = get_osd_379_images()
+                OSD_379_background, OSD_379_process, OSD_379_results = images
 
                 return (
                     "Visualization of OSD-379 is completed!",  # Status
@@ -289,15 +310,9 @@ def callbacks(_app):
             if quick_view_enabled:
                 time.sleep(2)
 
-                # 這裡加入OSD-379圖片的URL，並使用html.Img顯示
-                osd_665_background_image_url = "https://github.com/saxophonesam/NASA-OSDR-Visualize-Tool/blob/main/image/OSD-665/Experiment-Background.png?raw=true"
-                OSD_665_background=html.Img(src=osd_665_background_image_url, style={'width': '100%','height': '100',}), # Background區塊顯示圖片
-
-                osd_665_process_image_url = "https://github.com/saxophonesam/NASA-OSDR-Visualize-Tool/blob/main/image/OSD-665/Experiment-Process.png?raw=true"
-                OSD_665_process=html.Img(src=osd_665_process_image_url, style={'width': '100%','height': '100',}), # Process區塊顯示圖片
-
-                osd_665_results_image_url = "https://github.com/saxophonesam/NASA-OSDR-Visualize-Tool/blob/main/image/OSD-665/Experiment-Results.png?raw=true"
-                OSD_665_results=html.Img(src=osd_665_results_image_url, style={'width': '100%','height': '100',}), # Results區塊顯示圖片
+                # 這裡加入OSD-665圖片的URL，並使用html.Img顯示              
+                images = get_osd_665_images()
+                OSD_665_background, OSD_665_process, OSD_665_results = images
 
                 return (
                     "Visualization of OSD-665 is completed!",  # Status
@@ -392,15 +407,9 @@ def callbacks(_app):
             
             time.sleep(2)
             
-            # 這裡加入Compare圖片的URL，並使用html.Img顯示
-            compare_background_image_url = "https://github.com/saxophonesam/NASA-OSDR-Visualize-Tool/blob/main/image/Compare/Experiment-Background.png?raw=true"
-            Compare_background=html.Img(src=compare_background_image_url, style={'width': '100%','height': '100',}), # Background區塊顯示圖片
-
-            compare_process_image_url = "https://github.com/saxophonesam/NASA-OSDR-Visualize-Tool/blob/main/image/Compare/Experiment-Process.png?raw=true"
-            Compare_process=html.Img(src=compare_process_image_url, style={'width': '100%','height': '100',}), # Process區塊顯示圖片
-
-            compare_results_image_url = "https://github.com/saxophonesam/NASA-OSDR-Visualize-Tool/blob/main/image/Compare/Experiment-Results.png?raw=true"
-            Compare_results=html.Img(src=compare_results_image_url, style={'width': '100%','height': '100',}), # Results區塊顯示圖片
+            # 這裡加入Compare圖片的URL，並使用html.Img顯示       
+            images = get_compare_images()
+            Compare_background, Compare_process, Compare_results = images
 
             return (
                 Compare_background, # Background區塊

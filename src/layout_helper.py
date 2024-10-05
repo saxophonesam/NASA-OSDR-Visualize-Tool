@@ -74,7 +74,7 @@ def app_page_layout(page_layout,
                         children=[
                             'View on GitHub'
                         ],
-                        href="https://github.com/saxophonesam/desktop-tutorial",
+                        href="https://github.com/saxophonesam/NASA-OSDR-Visualize-Tool/tree/main",
                         target="_blank",  # 在新分頁中打開
                         style={'color': 'white' if light_logo else 'black',
                                'border': 'solid 1px white' if light_logo else 'solid 1px black'}

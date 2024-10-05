@@ -54,13 +54,6 @@
     display: block;
 }
 
-
-/* Content background樣式 */
-.content-right-height {
-    height: 33%; /* 佔網頁高度比例1/3 */
-    display: block;
-}
-
 /* Footer 接續顯示在Content之後 */
 #app-footer {
     width: 100%;

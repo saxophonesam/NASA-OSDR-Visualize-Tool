@@ -27,7 +27,7 @@ def generate_custom_box_style(width, aspect_ratio):
         'vertical-align': 'top'
     }
 
-def generate_custom_box_style_left(width, height):
+def generate_custom_box_style_px(width, height):
     return {
         'background-color': '#f5f5f5',
         'border': '1px solid #ccc',
@@ -107,7 +107,7 @@ def layout():
                                     ], className="link-repository-description")
                                 ])
                             ], className="custom-box-content")
-                        ], style=generate_custom_box_style_left(100, 500)),
+                        ], style=generate_custom_box_style(100, '0.85')),
 
                         # Experiments Compare區塊
                         html.Div([
@@ -139,7 +139,7 @@ def layout():
                                     )
                                 ], style={'text-align': 'center', 'margin-top': '10px', 'margin-bottom': '15px'}),
                             ], className="custom-box-content")
-                        ], style=generate_custom_box_style_left(100, 1300))
+                        ], style=generate_custom_box_style(100, '1.8'))
 
                     ], className="content-left-side"), #佔網頁寬度比例1/3 + 分隔線
 
@@ -169,7 +169,7 @@ def layout():
                                     ]),
                                 ]),
                             ]),
-                         ], style=generate_custom_box_style(100, '1.6')),
+                         ], style=generate_custom_box_style(100, '1.4')),
                     ], className="content-right-side") #佔網頁寬度比例2/3
                 ], style={'display': 'flex', 'justify-content': 'space-between'}),
             ], id="app-content"),
@@ -338,10 +338,10 @@ def callbacks(_app):
             # 根據 Quick View 狀態，決定訪問的資料夾
             if quick_view_value:
                 # experiment_files = get_experiment_files_app(DATA_FOLDER_PATH)
-                experiment_files = []
+                experiment_files = ['OSD-379','OSD-665']
             else:
                 # experiment_files = get_experiment_files_app(DESKTOP_FOLDER_PATH)
-                experiment_files = ['OSD-379','OSD-665']
+                experiment_files = []
 
             # 判斷是否有檔案存在
             if not experiment_files:
@@ -356,6 +356,60 @@ def callbacks(_app):
             return options, experiment_files, "Operation completed!"
     
         raise PreventUpdate  # 如果不是 list all 按鈕，則不進行更新
+    
+    @_app.callback(
+    [
+        Output("exp-background", "children", allow_duplicate=True),  # 更新 background 區塊
+        Output("exp-process", "children", allow_duplicate=True),     # 更新 process 區塊
+        Output("exp-results", "children", allow_duplicate=True),     # 更新 results 區塊
+        Output("experiments-compare-status-indicator", "children", allow_duplicate=True),  # 更新 status 區塊
+    ],
+    Input("compare-button", "n_clicks"),   # 監聽 Compare 按鈕
+    State("memory-selection", "value"),    # 監聽 Dropdown 的選擇狀態
+    prevent_initial_call=True  # 禁止在初次加載時觸發回調
+    )
+    def compare_experiments(compare_clicks, selected_experiments):
+        # 取得當前觸發回調的上下文
+        ctx = dash.callback_context
+
+        # 如果按鈕沒有被點擊，則不進行更新
+        if not ctx.triggered:
+            raise PreventUpdate
+
+        # 獲取觸發回調的按鈕ID
+        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+
+        # 檢查是否是 Compare 按鈕被點擊
+        if button_id == "compare-button":
+            # 檢查是否選擇了兩個或更多的實驗
+            if len(selected_experiments) < 2:
+                return (
+                    "No updates.",  # 更新 background 區塊
+                    "No updates.",  # 更新 process 區塊
+                    "No updates.",  # 更新 results 區塊
+                    "Please select at least two experiments."  # Status
+                )
+            
+            time.sleep(2)
+            
+            # 這裡加入Compare圖片的URL，並使用html.Img顯示
+            compare_background_image_url = "https://github.com/saxophonesam/NASA-OSDR-Visualize-Tool/blob/main/image/Compare/Experiment-Background.png?raw=true"
+            Compare_background=html.Img(src=compare_background_image_url, style={'width': '100%','height': '100',}), # Background區塊顯示圖片
+
+            compare_process_image_url = "https://github.com/saxophonesam/NASA-OSDR-Visualize-Tool/blob/main/image/Compare/Experiment-Process.png?raw=true"
+            Compare_process=html.Img(src=compare_process_image_url, style={'width': '100%','height': '100',}), # Process區塊顯示圖片
+
+            compare_results_image_url = "https://github.com/saxophonesam/NASA-OSDR-Visualize-Tool/blob/main/image/Compare/Experiment-Results.png?raw=true"
+            Compare_results=html.Img(src=compare_results_image_url, style={'width': '100%','height': '100',}), # Results區塊顯示圖片
+
+            return (
+                Compare_background, # Background區塊
+                Compare_process, # Process區塊
+                Compare_results, # Results區塊
+                "Experiments compared successfully!"  # Status 
+            )
+        
+        raise PreventUpdate  # 如果不是預期的按鈕被點擊，則不更新
 
 
 app = run_standalone_app(layout, callbacks, header_colors)

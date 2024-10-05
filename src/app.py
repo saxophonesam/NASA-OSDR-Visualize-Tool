@@ -169,31 +169,7 @@ def layout():
                                     ]),
                                 ]),
                             ]),
-                         ], style=generate_custom_box_style(100, '2')),
-                        # # Experiments Background區塊
-                        # html.Div([
-                        #     html.Div("Experiment Background", className="custom-box-header"),
-                        #     dcc.Loading(id="loading-background", children=[
-                        #         html.Div("Background information will be shown here.", id="exp-background", className="custom-box-content"),
-                        #     ]),
-                        # ], style=generate_custom_box_style(100, '1.88')),
-
-                        # # Experiments Process區塊
-                        # html.Div([
-                        #     html.Div("Experiment Process", className="custom-box-header"),
-                        #     dcc.Loading(id="loading-process", children=[
-                        #         html.Div("Process data will be shown here.", id="exp-process", className="custom-box-content"),
-                        #     ]),
-                        # ], style=generate_custom_box_style(100, '1.88')),
-
-                        # # Experiments Data Results區塊
-                        # html.Div([
-                        #     html.Div("Experiment Results", className="custom-box-header"),
-                        #     dcc.Loading(id="loading-results", children=[
-                        #         html.Div("Data Results will be shown here.", id="exp-results", className="custom-box-content"),
-                        #     ]),
-                        # ], style=generate_custom_box_style(100, '1.88')),
-
+                         ], style=generate_custom_box_style(100, '1.6')),
                     ], className="content-right-side") #佔網頁寬度比例2/3
                 ], style={'display': 'flex', 'justify-content': 'space-between'}),
             ], id="app-content"),

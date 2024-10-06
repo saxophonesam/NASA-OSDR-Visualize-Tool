@@ -144,11 +144,11 @@ def layout():
                     html.Div([
                         html.Div([
                             html.Div("Experiment Visualization", className="custom-box-header"),
-                            dcc.Tabs(id="tabs-background", value='tab-1', children=[
-                                # Experiment Background區塊
-                                dcc.Tab(label='Experiments Background', value='tab-1', children=[
-                                    dcc.Loading(id="loading-background", children=[
-                                        html.Div("Background information will be shown here.", id="exp-background", className="custom-box-content"),
+                            dcc.Tabs(id="tabs-description", value='tab-1', children=[
+                                # Experiment Description區塊
+                                dcc.Tab(label='Experiments Description', value='tab-1', children=[
+                                    dcc.Loading(id="loading-description", children=[
+                                        html.Div("Description information will be shown here.", id="exp-description", className="custom-box-content"),
                                     ]),
                                 ]),
 
@@ -180,7 +180,7 @@ def callbacks(_app):
         [
             Output("link-repository-status-indicator", "children"), # 更新link repository status指示器
             Output("experiments-compare-status-indicator", "children"), # 更新compare status指示器
-            Output("exp-background", "children"), # 更新background區塊
+            Output("exp-description", "children"), # 更新Description區塊
             Output("exp-process", "children"), # 更新process區塊
             Output("exp-results", "children"), # 更新results區塊
         ],
@@ -213,12 +213,12 @@ def callbacks(_app):
 
                 # 這裡加入OSD-379圖片的URL，並使用html.Img顯示           
                 images = get_osd_379_images()
-                OSD_379_background, OSD_379_process, OSD_379_results = images
+                OSD_379_description, OSD_379_process, OSD_379_results = images
 
                 return (
                     "Visualization of OSD-379 is completed!",  # link repository Status
                     "Visualization of OSD-379 is stored!",  # compare Status
-                    OSD_379_background, # Background區塊
+                    OSD_379_description, # description區塊
                     OSD_379_process, # Process區塊
                     OSD_379_results # Results區塊
                 )
@@ -227,12 +227,12 @@ def callbacks(_app):
 
                 # 這裡加入OSD-665圖片的URL，並使用html.Img顯示           
                 images = get_osd_665_images()
-                OSD_665_background, OSD_665_process, OSD_665_results = images
+                OSD_665_description, OSD_665_process, OSD_665_results = images
 
                 return (
                     "Visualization of OSD-665 is completed!",  # link repository Status
                     "Visualization of OSD-665 is stored!",  # compare Status
-                    OSD_665_background, # Background區塊
+                    OSD_665_description, # description區塊
                     OSD_665_process, # Process區塊
                     OSD_665_results # Results區塊
                 )
@@ -240,7 +240,7 @@ def callbacks(_app):
                 return (
                     "Operation not allowed!",  # link repository Status
                     "No updates.",  # compare Status
-                    "No updates.",  # Background區塊
+                    "No updates.",  # description區塊
                     "No updates.",  # Process區塊
                     "No updates."  # Results區塊
                 )
@@ -248,7 +248,7 @@ def callbacks(_app):
                 return (
                     "No URL provided, cannot proceed!",  # link repository Status
                     "No updates.",  # compare Status
-                    "No updates.",  # Background區塊
+                    "No updates.",  # description區塊
                     "No updates.",  # Process區塊
                     "No updates."  # Results區塊
                 )
@@ -263,12 +263,12 @@ def callbacks(_app):
                     if user_input_url == "https://osdr.nasa.gov/bio/repo/data/studies/OSD-379":
                         # # OSD-379 URL處理邏輯                        
                         images = get_osd_379_images()
-                        OSD_379_background, OSD_379_process, OSD_379_results = images
+                        OSD_379_description, OSD_379_process, OSD_379_results = images
 
                         return (
                             "Visualization of OSD-379 is completed!",  # link repository Status
                             "Visualization of OSD-379 is stored!",  # compare Status
-                            OSD_379_background,  # Background區塊
+                            OSD_379_description,  # description區塊
                             OSD_379_process,     # Process區塊
                             OSD_379_results      # Results區塊
                         )
@@ -276,12 +276,12 @@ def callbacks(_app):
                     elif user_input_url == "https://osdr.nasa.gov/bio/repo/data/studies/OSD-665":
                         # OSD-665 URL處理邏輯                   
                         images = get_osd_665_images()
-                        OSD_665_background, OSD_665_process, OSD_665_results = images
+                        OSD_665_description, OSD_665_process, OSD_665_results = images
 
                         return (
                             "Visualization of OSD-665 is completed!",  # link repository Status
                             "Visualization of OSD-665 is stored!",  # compare Status
-                            OSD_665_background,  # Background區塊
+                            OSD_665_description,  # description區塊
                             OSD_665_process,     # Process區塊
                             OSD_665_results      # Results區塊
                         )
@@ -290,7 +290,7 @@ def callbacks(_app):
                         return (
                             f"Invalid URL: {user_input_url}",  # 顯示錯誤訊息在 link repository Status
                             "No updates.",  # compare Status
-                            "No updates.",  # Background區塊
+                            "No updates.",  # description區塊
                             "No updates.",  # Process區塊
                             "No updates."  # Results區塊
                         )
@@ -300,7 +300,7 @@ def callbacks(_app):
                     return (
                         f"Error: {str(e)}",  # 顯示錯誤訊息在 link repository Status
                         "No updates.",  # compare Status
-                        "No updates.",  # Background區塊
+                        "No updates.",  # description區塊
                         "No updates.",  # Process區塊
                         "No updates."  # Results區塊
                     )
@@ -308,7 +308,7 @@ def callbacks(_app):
                 return (
                     "Operation not allowed!",  # link repository Status
                     "No updates.",  # compare Status
-                    "No updates.",  # Background區塊
+                    "No updates.",  # description區塊
                     "No updates.",  # Process區塊
                     "No updates."  # Results區塊
                 )
@@ -318,12 +318,12 @@ def callbacks(_app):
             time.sleep(2)
             # 這裡加入OSD-665圖片的URL，並使用html.Img顯示           
             images = get_compare_images()
-            Compare_background, Compare_process, Compare_results = images
+            Compare_description, Compare_process, Compare_results = images
 
             return (
                 "",  # link repository Status
                 "Experiments compared successfully!",  # compare Status
-                Compare_background, # Background區塊
+                Compare_description, # description區塊
                 Compare_process, # Process區塊
                 Compare_results # Results區塊
             )

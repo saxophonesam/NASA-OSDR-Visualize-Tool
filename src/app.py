@@ -4,6 +4,7 @@ from dash.exceptions import PreventUpdate
 from dash import html
 from dash import dcc
 import dash_daq as daq
+import dash_bootstrap_components as dbc  # 如果需要 Bootstrap 樣式，可以安裝使用
 import time
 
 from layout_helper import run_standalone_app
@@ -64,25 +65,27 @@ def layout():
                         html.Div([
                             html.Div("Link Repository", className="custom-box-header"),
                             html.Div([
-                                # Quick View 開關
+                                # RadioItems
                                 html.Div([
-                                    html.P("Quick view : ", className="link-repository-font"),
-                                    daq.BooleanSwitch(id="quick-view-switch", color="#2922ff", on=True),
-                                ], style={'display': 'flex', 'align-items': 'center', 'margin-bottom': '15px'}),
-                                
-                                # OSD Buttons
-                                html.Div([
-                                    html.Button("OSD-379", id="osd-379", className="link-repository-button"),
-                                    html.Button("OSD-665", id="osd-665", className="link-repository-button"),
-                                ], style={'text-align': 'center', 'margin-bottom': '15px'}),
+                                    dcc.RadioItems(
+                                        id='link-repository-radio-options',
+                                        options=[
+                                            {'label': 'OSD-379', 'value': 'osd-379'},
+                                            {'label': 'OSD-665', 'value': 'osd-665'},
+                                            {'label': 'Enter link', 'value': 'enter-link'}
+                                        ],
+                                        value='osd-379',  # 預設選擇第一個選項
+                                        className='radio-options'
+                                    ),
+                                ],style={'display': 'flex', 'align-items': 'center', 'margin-bottom': '15px'}),
 
-                                # Link輸入框和Upload按鈕
+                                # Link輸入框和visualize按鈕
                                 html.Div([
                                     dcc.Input(placeholder="Enter repository link...", type="text", id="user-input-url", className="link-repository-input"),
                                 ], style={'text-align': 'center', 'margin-bottom': '10px'}),
 
                                 html.Div([
-                                    html.Button("Upload Data", id="upload-data", className="link-repository-button"),
+                                    html.Button("Visualize", id="visualize-button", className="link-repository-button"),
                                 ], style={'text-align': 'center'}),
 
                                 # Status 顯示
@@ -97,13 +100,13 @@ def layout():
                                     )
                                 ], style={'text-align': 'center', 'margin-top': '10px', 'margin-bottom': '15px'}),
 
-                                # Description顯示
+                                # # Description顯示
                                 html.Div([
                                     html.P(["Description :",html.Br(),
                                             """
-                                            Please enter the database link you're interested in
+                                            Choose OSD-379 or OSD-665 to quickly preview the visualization results,
+                                            or enter the database link you're interested in
                                             and wait patiently for the visualization results.
-                                            The metadata will be downloaded to your desktop simultaneously.
                                             """
                                     ], className="link-repository-description")
                                 ])
@@ -114,20 +117,6 @@ def layout():
                         html.Div([
                             html.Div("Experiments Compare", className="custom-box-header"),
                             html.Div([
-                                # Memory Selection (下拉選單)
-                                dcc.Dropdown(
-                                    id='memory-selection',
-                                    options=[],  # 初始為空，待觸發後更新
-                                    multi=True,
-                                    value=[],  # 預設選擇的項目
-                                    placeholder="Select experiments...",  # 提示文字
-                                ),
-                                # List all 和 Compare 按鈕
-                                html.Div([
-                                    html.Button("List all", id='list-all-button', className="link-repository-button"),
-                                    html.Button("Compare", id='compare-button', className="link-repository-button"),
-                                ], style={'text-align': 'center', 'margin-top': '15px'}),  # 按鈕區域
-
                                 # Status 顯示
                                 html.Div([
                                     html.P("Status: ", className="link-repository-font", style={'display': 'inline-block', 'margin-right': '10px'}),  # Status 文字
@@ -139,6 +128,13 @@ def layout():
                                         type="default",
                                     )
                                 ], style={'text-align': 'center', 'margin-top': '10px', 'margin-bottom': '15px'}),
+
+                                html.Div([
+                                    # html.Button("List all", id='list-all-button', className="link-repository-button"),
+                                    html.Button("Compare", id='compare-button', className="link-repository-button"),
+                                ], style={'text-align': 'center', 'margin-top': '15px'}),  # 按鈕區域
+
+                                
                             ], className="custom-box-content")
                         ], style=generate_custom_box_style(100, '1.8'))
 
@@ -182,23 +178,23 @@ def layout():
 def callbacks(_app):
     @_app.callback(
         [
-            Output("link-repository-status-indicator", "children"), # 更新status指示器
+            Output("link-repository-status-indicator", "children"), # 更新link repository status指示器
+            Output("experiments-compare-status-indicator", "children"), # 更新compare status指示器
             Output("exp-background", "children"), # 更新background區塊
             Output("exp-process", "children"), # 更新process區塊
             Output("exp-results", "children"), # 更新results區塊
         ],
 
         [   # 監聽不同按鈕的點擊
-            Input("osd-379", "n_clicks"), 
-            Input("osd-665", "n_clicks"),
-            Input("upload-data", "n_clicks")
+            Input("link-repository-radio-options", "value"),  # 監聽 radio button 的選擇變化
+            Input("visualize-button", "n_clicks"),
+            Input("compare-button", "n_clicks")
         ], 
         [
-            State("quick-view-switch", "on"), # 確認quick-view開關狀態
             State("user-input-url", "value") # 讀取輸入框值
         ]
     )
-    def load_and_visualize(osd_379_clicks, osd_665_clicks, upload_data_clicks, quick_view_enabled, user_input_url):
+    def load_and_visualize(radio_options_value, visualize_clicks, compare_clicks, user_input_url):
         # 取得當前觸發回調的上下文
         ctx = dash.callback_context
 
@@ -210,16 +206,53 @@ def callbacks(_app):
         button_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
         # 如果是 Upload Data 按鈕被點擊
-        if button_id == "upload-data":
-            # Quick View 開啟時禁止操作
-            if quick_view_enabled and user_input_url:
+        if button_id == "visualize-button":
+            # 如果在有輸入連結的情況下按下了visualize按鈕並且Radio Button的值為 'osd-379' 或 'osd-665'便禁止操作
+            if radio_options_value == 'osd-379' and not user_input_url:
+                time.sleep(2)
+
+                # 這裡加入OSD-379圖片的URL，並使用html.Img顯示           
+                images = get_osd_379_images()
+                OSD_379_background, OSD_379_process, OSD_379_results = images
+
                 return (
-                    "Quick view is enabled, operation not allowed!",  # Status
-                    "Quick view is enabled, no updates.",  # Background區塊
-                    "Quick view is enabled, no updates.",  # Process區塊
-                    "Quick view is enabled, no updates."  # Results區塊
+                    "Visualization of OSD-379 is completed!",  # link repository Status
+                    "Visualization of OSD-379 is stored!",  # compare Status
+                    OSD_379_background, # Background區塊
+                    OSD_379_process, # Process區塊
+                    OSD_379_results # Results區塊
                 )
-            elif user_input_url:
+            elif radio_options_value == 'osd-665' and not user_input_url:
+                time.sleep(2)
+
+                # 這裡加入OSD-665圖片的URL，並使用html.Img顯示           
+                images = get_osd_665_images()
+                OSD_665_background, OSD_665_process, OSD_665_results = images
+
+                return (
+                    "Visualization of OSD-665 is completed!",  # link repository Status
+                    "Visualization of OSD-665 is stored!",  # compare Status
+                    OSD_665_background, # Background區塊
+                    OSD_665_process, # Process區塊
+                    OSD_665_results # Results區塊
+                )
+            elif radio_options_value in ['osd-379', 'osd-665'] and user_input_url:
+                return (
+                    "Operation not allowed!",  # link repository Status
+                    "No updates.",  # compare Status
+                    "No updates.",  # Background區塊
+                    "No updates.",  # Process區塊
+                    "No updates."  # Results區塊
+                )
+            elif radio_options_value == 'enter-link' and not user_input_url:
+                return (
+                    "No URL provided, cannot proceed!",  # link repository Status
+                    "No updates.",  # compare Status
+                    "No updates.",  # Background區塊
+                    "No updates.",  # Process區塊
+                    "No updates."  # Results區塊
+                )
+            elif user_input_url and radio_options_value == 'enter-link':
                 try:
                     # 如果 quick view 開關是 OFF，且輸入框有輸入值，則將輸入的值賦給 user_input_url
                     # web_browser_type = "edge"
@@ -231,9 +264,10 @@ def callbacks(_app):
                         # # OSD-379 URL處理邏輯                        
                         images = get_osd_379_images()
                         OSD_379_background, OSD_379_process, OSD_379_results = images
-                        
+
                         return (
-                            "Data for OSD-379 successfully downloaded and processed!",  # Status
+                            "Visualization of OSD-379 is completed!",  # link repository Status
+                            "Visualization of OSD-379 is stored!",  # compare Status
                             OSD_379_background,  # Background區塊
                             OSD_379_process,     # Process區塊
                             OSD_379_results      # Results區塊
@@ -245,7 +279,8 @@ def callbacks(_app):
                         OSD_665_background, OSD_665_process, OSD_665_results = images
 
                         return (
-                            "Data for OSD-665 successfully downloaded and processed!",  # Status
+                            "Visualization of OSD-665 is completed!",  # link repository Status
+                            "Visualization of OSD-665 is stored!",  # compare Status
                             OSD_665_background,  # Background區塊
                             OSD_665_process,     # Process區塊
                             OSD_665_results      # Results區塊
@@ -253,7 +288,8 @@ def callbacks(_app):
 
                     else:
                         return (
-                            f"Invalid URL: {user_input_url}",  # 顯示錯誤訊息在 Status
+                            f"Invalid URL: {user_input_url}",  # 顯示錯誤訊息在 link repository Status
+                            "No updates.",  # compare Status
                             "No updates.",  # Background區塊
                             "No updates.",  # Process區塊
                             "No updates."  # Results區塊
@@ -262,163 +298,37 @@ def callbacks(_app):
                 except ValueError as e:
                     # 捕捉 ValueError 並將錯誤訊息顯示到頁面
                     return (
-                        f"Error: {str(e)}",  # 顯示錯誤訊息在 Status
+                        f"Error: {str(e)}",  # 顯示錯誤訊息在 link repository Status
+                        "No updates.",  # compare Status
                         "No updates.",  # Background區塊
                         "No updates.",  # Process區塊
                         "No updates."  # Results區塊
                     )
-            elif quick_view_enabled and not user_input_url:
-                return (
-                    "Quick view is enabled, operation not allowed!",  # Status
-                    "No updates.",  # Background區塊
-                    "No updates.",  # Process區塊
-                    "No updates."  # Results區塊
-                )
             else:
                 return (
-                    "No URL provided, cannot proceed!",  # Status
+                    "Operation not allowed!",  # link repository Status
+                    "No updates.",  # compare Status
                     "No updates.",  # Background區塊
                     "No updates.",  # Process區塊
                     "No updates."  # Results區塊
                 )
             
-        # 如果按的是 OSD-379 按鈕
-        if button_id == "osd-379":
-            if quick_view_enabled:
-                time.sleep(2)
-
-                # 這裡加入OSD-379圖片的URL，並使用html.Img顯示           
-                images = get_osd_379_images()
-                OSD_379_background, OSD_379_process, OSD_379_results = images
-
-                return (
-                    "Visualization of OSD-379 is completed!",  # Status
-                    OSD_379_background, # Background區塊
-                    OSD_379_process, # Process區塊
-                    OSD_379_results # Results區塊
-                )
-            else:
-                return (
-                    "Quick view is disabled, operation not allowed!",  # Status
-                    "No updates.",  # Background區塊
-                    "No updates.",  # Process區塊
-                    "No updates."  # Results區塊
-                )
-            
-        # 如果按的是 OSD-665 按鈕
-        if button_id == "osd-665":
-            if quick_view_enabled:
-                time.sleep(2)
-
-                # 這裡加入OSD-665圖片的URL，並使用html.Img顯示              
-                images = get_osd_665_images()
-                OSD_665_background, OSD_665_process, OSD_665_results = images
-
-                return (
-                    "Visualization of OSD-665 is completed!",  # Status
-                    OSD_665_background, # Background區塊
-                    OSD_665_process, # Process區塊
-                    OSD_665_results # Results區塊
-                )
-            else:
-                return (
-                    "Quick view is disabled, operation not allowed!",  # Status
-                    "No updates.",  # Background區塊
-                    "No updates.",  # Process區塊
-                    "No updates."  # Results區塊
-                )
-            
-    @_app.callback(
-        [
-            Output('memory-selection', 'options'), # 更新下拉選單的選項
-            Output('memory-selection', 'value'), # 更新下拉選單的選擇值
-            Output("experiments-compare-status-indicator", "children") # 更新status指示器
-        ],
-        Input('list-all-button', 'n_clicks'),
-        State("quick-view-switch", "on"),
-    )
-    def list_all_experiments(n_clicks, quick_view_value):
-        # 取得當前觸發回調的上下文
-        ctx = dash.callback_context
-
-        # 如果按鈕沒有被點擊
-        if not ctx.triggered:
-            raise PreventUpdate
-    
-        # 獲取觸發回調的按鈕ID
-        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-
-        # 檢查是否是 list all 按鈕被點擊
-        if button_id == 'list-all-button':
-            # 根據 Quick View 狀態，決定訪問的資料夾
-            if quick_view_value:
-                # experiment_files = get_experiment_files_app(DATA_FOLDER_PATH)
-                experiment_files = ['OSD-379','OSD-665']
-            else:
-                # experiment_files = get_experiment_files_app(DESKTOP_FOLDER_PATH)
-                experiment_files = []
-
-            # 判斷是否有檔案存在
-            if not experiment_files:
-                return [], [], "No files! Please go to Link Repository and upload data first"
-
-            # 構建下拉選單的 options
-            # options = [{'label': f"{file}", 'value': file} for file in experiment_files]
-            options = [{'label': file, 'value': file} for file in experiment_files]
-
-            # 回傳 options 和 value 以及 status 訊息
-            # return options, [file for file in experiment_files], "Operation completed!"
-            return options, experiment_files, "Operation completed!"
-    
-        raise PreventUpdate  # 如果不是 list all 按鈕，則不進行更新
-    
-    @_app.callback(
-    [
-        Output("exp-background", "children", allow_duplicate=True),  # 更新 background 區塊
-        Output("exp-process", "children", allow_duplicate=True),     # 更新 process 區塊
-        Output("exp-results", "children", allow_duplicate=True),     # 更新 results 區塊
-        Output("experiments-compare-status-indicator", "children", allow_duplicate=True),  # 更新 status 區塊
-    ],
-    Input("compare-button", "n_clicks"),   # 監聽 Compare 按鈕
-    State("memory-selection", "value"),    # 監聽 Dropdown 的選擇狀態
-    prevent_initial_call=True  # 禁止在初次加載時觸發回調
-    )
-    def compare_experiments(compare_clicks, selected_experiments):
-        # 取得當前觸發回調的上下文
-        ctx = dash.callback_context
-
-        # 如果按鈕沒有被點擊，則不進行更新
-        if not ctx.triggered:
-            raise PreventUpdate
-
-        # 獲取觸發回調的按鈕ID
-        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-
-        # 檢查是否是 Compare 按鈕被點擊
+        # 如果是 Upload Data 按鈕被點擊
         if button_id == "compare-button":
-            # 檢查是否選擇了兩個或更多的實驗
-            if len(selected_experiments) < 2:
-                return (
-                    "No updates.",  # 更新 background 區塊
-                    "No updates.",  # 更新 process 區塊
-                    "No updates.",  # 更新 results 區塊
-                    "Please select at least two experiments."  # Status
-                )
-            
             time.sleep(2)
-            
-            # 這裡加入Compare圖片的URL，並使用html.Img顯示       
+            # 這裡加入OSD-665圖片的URL，並使用html.Img顯示           
             images = get_compare_images()
             Compare_background, Compare_process, Compare_results = images
 
             return (
+                "",  # link repository Status
+                "Experiments compared successfully!",  # compare Status
                 Compare_background, # Background區塊
                 Compare_process, # Process區塊
-                Compare_results, # Results區塊
-                "Experiments compared successfully!"  # Status 
+                Compare_results # Results區塊
             )
-        
-        raise PreventUpdate  # 如果不是預期的按鈕被點擊，則不更新
+            
+        raise PreventUpdate
 
 
 app = run_standalone_app(layout, callbacks, header_colors)

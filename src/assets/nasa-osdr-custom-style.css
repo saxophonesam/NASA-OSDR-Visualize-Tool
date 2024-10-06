@@ -17,9 +17,16 @@
     text-align: center;
 }
 
-/* Quick view 開關樣式 */
-#quick-view-switch {
-    display: flex !important;
+/* 定義 RadioItems 樣式 */
+.radio-options {
+    font-size: 15px;
+    padding: 10px;
+}
+
+.radio-options label {
+    display: block;
+    font-weight: bold;
+    color: #4e4c4c; /* 深色字體 */
 }
 
 /* Link Repository 按鈕樣式 */
@@ -37,6 +44,7 @@
     align-items: center; /* 上下置中 */
     justify-content: center; /* 左右置中 */
     cursor: pointer;  /* 確保按鈕具有點擊效果 */
+    text-transform: none; /* 保持字母的原始大小寫 */
 }
 
 /* Hover 狀態 */
@@ -95,7 +103,7 @@
     margin-top: auto;  /* 確保描述部分位於最下方 */
     font-weight: bold;
     color: #4e4c4c; /* 深色字體 */
-    font-size: 1.7rem; /* 自適應字體大小 */
+    font-size: 1.5rem; /* 自適應字體大小 */
     text-align: left; /* 左對齊文字 */
 }
 
